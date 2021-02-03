@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/home/andre/repos/cuda-reaction-difusion/build",
-  "command": "/opt/cuda/bin/nvcc -forward-unknown-to-host-compiler -g -std=c++14 -x cu -dc /home/andre/repos/cuda-reaction-difusion/main.cu -o CMakeFiles/cuda_reaction_difusion.dir/main.cu.o",
-  "file": "/home/andre/repos/cuda-reaction-difusion/main.cu"
-}
-]

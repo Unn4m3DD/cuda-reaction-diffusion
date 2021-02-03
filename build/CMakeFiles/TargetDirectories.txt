@@ -1,3 +1,0 @@
-/home/andre/repos/cuda-reaction-difusion/build/CMakeFiles/rebuild_cache.dir
-/home/andre/repos/cuda-reaction-difusion/build/CMakeFiles/edit_cache.dir
-/home/andre/repos/cuda-reaction-difusion/build/CMakeFiles/cuda_reaction_difusion.dir
