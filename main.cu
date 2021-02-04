@@ -6,8 +6,8 @@ double *current_gen_a;
 double *current_gen_b;
 double *next_gen_a;
 double *next_gen_b;
-int simulation_width = 256;
-int simulation_height = 256;
+int simulation_width = 64;
+int simulation_height = 64;
 double dA = 1;
 double dB = .5;
 double feed_rate = .055;
@@ -18,7 +18,8 @@ __global__ void next(double *current_gen_a, double *current_gen_b,
                      double *next_gen_a, double *next_gen_b,
                      int simulation_width, int simulation_height, double dA,
                      double dB, double feed_rate, double kill_rate,
-                     double time_scale) {
+                     double time_scale)
+{
   int x = threadIdx.x;
   int y = blockDim.x;
   double nabla_a = -current_gen_a[x * simulation_height + y];
@@ -49,7 +50,8 @@ __global__ void next(double *current_gen_a, double *current_gen_b,
       b + (dB * nabla_b + a * b * b - (kill_rate + feed_rate) * b) * time_scale;
 }
 
-int main() {
+int main()
+{
   cudaMallocManaged(&current_gen_a,
                     simulation_width * simulation_height * sizeof(double));
   cudaMallocManaged(&current_gen_b,
@@ -64,18 +66,22 @@ int main() {
   cudaMemset(current_gen_b, 0,
              simulation_width * simulation_height * sizeof(double));
 
-  for (int z = 0; z < 15; z++) {
+  for (int z = 0; z < 15; z++)
+  {
     int rand_x = (rand() % (simulation_width - 6)) + 3;
     int rand_y = (rand() % (simulation_height - 6)) + 3;
-    for (int x = 0; x < 3; x++) {
-      for (int y = 0; y < 3; y++) {
+    for (int x = 0; x < 3; x++)
+    {
+      for (int y = 0; y < 3; y++)
+      {
         current_gen_a[(rand_x + x) * simulation_height + rand_y + y] = 0.0;
         current_gen_b[(rand_x + x) * simulation_height + rand_y + y] = 1.0;
       }
     }
   }
-  cout << "yhey" <<endl;
-  for (int i = 0; i < 10000; i++) {
+  cout << "yhey" << endl;
+  for (int i = 0; i < 1000000; i++)
+  {
     next<<<256, 256>>>(current_gen_a, current_gen_b, next_gen_a, next_gen_b,
                        simulation_width, simulation_height, dA, dB, feed_rate,
                        kill_rate, time_scale);
@@ -88,19 +94,22 @@ int main() {
     tmp = current_gen_b;
     current_gen_b = next_gen_b;
     next_gen_b = tmp;
-  }
 
-  for (int x = 0; x < simulation_width; x++) {
-    for (int y = 0; y < simulation_width; y++) {
-      double current_shade = current_gen_a[x * simulation_height + y] -
-                             current_gen_b[x * simulation_height + y];
-      cout << (current_shade < .2) ? " "
-      : (current_shade < .4)       ? "░"
-      : (current_shade < .6)       ? "▒"
-      : (current_shade < .8)       ? "▓"
-                                   : "█";
+    for (int x = 0; x < simulation_width; x++)
+    {
+      for (int y = 0; y < simulation_width; y++)
+      {
+        double current_shade = current_gen_a[x * simulation_height + y] * .5 +
+                               current_gen_b[x * simulation_height + y] * .5;
+        cout << ((current_shade < .2)   ? " "
+                 : (current_shade < .4) ? "░"
+                 : (current_shade < .6) ? "▒"
+                 : (current_shade < .8) ? "▓"
+                                        : "█");
+      }
+      cout << endl;
     }
-    cout << endl;
+    cin.get();
   }
   cudaFree(current_gen_a);
   cudaFree(current_gen_b);
